@@ -854,12 +854,23 @@
       const done = Object.values(userData).filter(d => d.done).length;
       const total = shifts.filter(s => s !== 'O').length;
 
+      // Count completed per shift type
+      let mDone = 0, eDone = 0, nDone = 0;
+      shifts.forEach((shift, idx) => {
+        const dateKey = getDateKey(idx);
+        if (userData[dateKey] && userData[dateKey].done) {
+          if (shift === 'M') mDone++;
+          else if (shift === 'E') eDone++;
+          else if (shift === 'N') nDone++;
+        }
+      });
+
       document.getElementById('userSub').textContent = `${total} shifts | ${done} completed`;
       document.getElementById('statsBar').innerHTML = `
     <div class="stat-card"><div class="label">Completed</div><div class="val" style="color:var(--success)">${done}/${total}</div></div>
-    <div class="stat-card"><div class="label">Morning</div><div class="val" style="color:var(--morning)">${mCount}</div></div>
-    <div class="stat-card"><div class="label">Evening</div><div class="val" style="color:var(--evening)">${eCount}</div></div>
-    <div class="stat-card"><div class="label">Night</div><div class="val" style="color:var(--night)">${nCount}</div></div>
+    <div class="stat-card"><div class="label">Morning</div><div class="val" style="color:var(--morning)">${mDone}/${mCount}</div></div>
+    <div class="stat-card"><div class="label">Evening</div><div class="val" style="color:var(--evening)">${eDone}/${eCount}</div></div>
+    <div class="stat-card"><div class="label">Night</div><div class="val" style="color:var(--night)">${nDone}/${nCount}</div></div>
   `;
     }
 
