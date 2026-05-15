@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Duty Roster Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0f1e;
+      --surface: #111827;
+      --surface2: #1a2235;
+      --border: #1e2d45;
+      --accent: #6366f1;
+      --accent2: #818cf8;
+      --morning: #f59e0b;
+      --evening: #8b5cf6;
+      --night: #06b6d4;
+      --off: #374151;
+      --text: #f1f5f9;
+      --text2: #94a3b8;
+      --success: #10b981;
+      --danger: #ef4444;
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── LANDING ── */
+    #landing {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: radial-gradient(ellipse at 60% 0%, #1e1b4b55 0%, transparent 60%),
+        radial-gradient(ellipse at 10% 80%, #0e7490 0%, transparent 50%), var(--bg);
+    }
+
+    .logo-badge {
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, var(--accent), var(--night));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 40px #6366f155;
+      animation: pulse 3s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 40px #6366f155
+      }
+
+      50% {
+        box-shadow: 0 0 60px #6366f199
+      }
+    }
+
+    #landing h1 {
+      font-size: clamp(28px, 5vw, 48px);
+      font-weight: 800;
+      text-align: center;
+      background: linear-gradient(135deg, #fff, var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    #landing p {
+      color: var(--text2);
+      margin: 10px 0 36px;
+      text-align: center;
+      font-size: 15px;
+    }
+
+    .input-wrap {
+      width: 100%;
+      max-width: 420px;
+      position: relative;
+    }
+
+    .input-wrap input {
+      width: 100%;
+      padding: 16px 56px 16px 20px;
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-size: 16px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color .25s, box-shadow .25s;
+    }
+
+    .input-wrap input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px #6366f130;
+    }
+
+    .input-wrap input::placeholder {
+      color: var(--text2);
+    }
+
+    #searchBtn {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: linear-gradient(135deg, var(--accent), var(--night));
+      border: none;
+      border-radius: 10px;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity .2s, transform .2s;
+    }
+
+    #searchBtn:hover {
+      opacity: .85;
+      transform: translateY(-50%) scale(1.08);
+    }
+
+    #searchBtn svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: #fff;
+      stroke-width: 2.5;
+    }
+
+    .suggestions {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    .suggestion-item {
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: background .15s;
+      font-size: 15px;
+    }
+
+    .suggestion-item:hover {
+      background: var(--border);
+    }
+
+    .error-msg {
+      color: var(--danger);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    /* ── DASHBOARD ── */
+    #dashboard {
+      display: none;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--night));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    header .user-info h2 {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    header .user-info p {
+      font-size: 12px;
+      color: var(--text2);
+    }
+
+    header .back-btn {
+      margin-left: auto;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text2);
+      cursor: pointer;
+      font-size: 13px;
+      transition: all .2s;
+    }
+
+    header .back-btn:hover {
+      color: var(--text);
+      border-color: var(--accent);
+    }
+
+    .stats-bar {
+      display: flex;
+      gap: 12px;
+      padding: 20px 24px;
+      flex-wrap: wrap;
+      background: var(--surface);
+    }
+
+    .stat-card {
+      flex: 1;
+      min-width: 120px;
+      padding: 14px 18px;
+      background: var(--surface2);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+    }
+
+    .stat-card .label {
+      font-size: 11px;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .stat-card .val {
+      font-size: 24px;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    .legend {
+      display: flex;
+      gap: 12px;
+      padding: 12px 24px;
+      flex-wrap: wrap;
+      font-size: 12px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+    }
+
+    .grid-container {
+      padding: 0 24px 40px;
+      overflow-x: auto;
+    }
+
+    .grid-scroll {
+      min-width: 700px;
+    }
+
+    .month-label {
+      font-size: 13px;
+      color: var(--text2);
+      font-weight: 600;
+      margin: 20px 0 10px;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+    }
+
+    .week-row {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .day-card {
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      cursor: pointer;
+      transition: border-color .2s, transform .15s, box-shadow .2s;
+      position: relative;
+      min-height: 80px;
+    }
+
+    .day-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px #6366f120;
+    }
+
+    .day-card.completed {
+      border-color: var(--success);
+      background: #10b98112;
+    }
+
+    .day-card.off-day {
+      opacity: .45;
+      cursor: default;
+    }
+
+    .day-card.off-day:hover {
+      transform: none;
+      border-color: var(--border);
+      box-shadow: none;
+    }
+
+    .day-num {
+      font-size: 12px;
+      color: var(--text2);
+      font-weight: 500;
+    }
+
+    .shift-badge {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .5px;
+    }
+
+    .shift-M {
+      background: #f59e0b22;
+      color: var(--morning);
+      border: 1px solid #f59e0b55;
+    }
+
+    .shift-E {
+      background: #8b5cf622;
+      color: var(--evening);
+      border: 1px solid #8b5cf655;
+    }
+
+    .shift-N {
+      background: #06b6d422;
+      color: var(--night);
+      border: 1px solid #06b6d455;
+    }
+
+    .shift-O {
+      background: var(--off);
+      color: var(--text2);
+    }
+
+    .check-icon {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--success);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .day-card.completed .check-icon {
+      display: flex;
+    }
+
+    .check-icon svg {
+      width: 10px;
+      height: 10px;
+      fill: none;
+      stroke: #fff;
+      stroke-width: 3;
+    }
+
+    .comment-preview {
+      font-size: 10px;
+      color: var(--text2);
+      margin-top: 6px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: #00000088;
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      padding: 20px;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+      animation: fadeIn .2s;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      width: 100%;
+      max-width: 440px;
+      animation: slideUp .25s;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0
+      }
+
+      to {
+        transform: none;
+        opacity: 1
+      }
+    }
+
+    .modal h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .modal .modal-sub {
+      font-size: 13px;
+      color: var(--text2);
+      margin-bottom: 20px;
+    }
+
+    .modal label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text2);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .modal textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 12px;
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      resize: vertical;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .modal textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn-primary {
+      flex: 1;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--accent), var(--night));
+      border: none;
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .2s;
+    }
+
+    .btn-primary:hover {
+      opacity: .85;
+    }
+
+    .btn-secondary {
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text2);
+      font-family: inherit;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .btn-secondary:hover {
+      color: var(--text);
+      border-color: var(--text2);
+    }
+
+    .toggle-complete {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding: 12px;
+      background: var(--surface2);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      border: 1.5px solid var(--border);
+      transition: border-color .2s;
+    }
+
+    .toggle-complete:hover {
+      border-color: var(--success);
+    }
+
+    .toggle-complete.active {
+      border-color: var(--success);
+      background: #10b98112;
+    }
+
+    .toggle-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .2s;
+      flex-shrink: 0;
+    }
+
+    .toggle-complete.active .toggle-dot {
+      background: var(--success);
+      border-color: var(--success);
+    }
+
+    .toggle-dot svg {
+      width: 10px;
+      height: 10px;
+      fill: none;
+      stroke: #fff;
+      stroke-width: 3;
+      display: none;
+    }
+
+    .toggle-complete.active .toggle-dot svg {
+      display: block;
+    }
+
+    .toggle-label {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* colleague pills */
+    .colleagues-section {
+      margin-bottom: 16px;
+    }
+
+    .colleagues-section label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text2);
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .colleague-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .colleague-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 12px 5px 6px;
+      font-size: 13px;
+      font-weight: 500;
+      transition: border-color .2s;
+    }
+
+    .colleague-pill:hover {
+      border-color: var(--accent2);
+    }
+
+    .colleague-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--night));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- LANDING -->
+  <div id="landing">
+    <div class="logo-badge">📋</div>
+    <h1>Duty Roster Tracker</h1>
+    <p>Enter your name to view your shift schedule</p>
+    <div class="input-wrap">
+      <input type="text" id="nameInput" placeholder="Type your name..." autocomplete="off" id="nameInputField" />
+      <button id="searchBtn" title="Search">
+        <svg viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+      </button>
+      <div class="suggestions" id="suggestions" style="display:none"></div>
+    </div>
+    <p class="error-msg" id="errorMsg"></p>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard">
+    <header>
+      <div class="avatar" id="avatarEl"></div>
+      <div class="user-info">
+        <h2 id="userName"></h2>
+        <p id="userSub"></p>
+      </div>
+      <button class="back-btn" onclick="goBack()">← Back</button>
+    </header>
+    <div class="stats-bar" id="statsBar"></div>
+    <div class="legend">
+      <span class="legend-item"><span class="dot" style="background:var(--morning)"></span>Morning (M)</span>
+      <span class="legend-item"><span class="dot" style="background:var(--evening)"></span>Evening (E)</span>
+      <span class="legend-item"><span class="dot" style="background:var(--night)"></span>Night (N)</span>
+      <span class="legend-item"><span class="dot" style="background:var(--off)"></span>Off (O)</span>
+      <span class="legend-item"><span class="dot" style="background:var(--success)"></span>Completed</span>
+    </div>
+    <div class="grid-container">
+      <div class="grid-scroll" id="rosterGrid"></div>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <h3 id="modalTitle"></h3>
+      <p class="modal-sub" id="modalSub"></p>
+      <div class="toggle-complete" id="toggleComplete" onclick="toggleDone()">
+        <div class="toggle-dot">
+          <svg viewBox="0 0 24 24">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        </div>
+        <span class="toggle-label">Mark as Completed</span>
+      </div>
+      <div class="colleagues-section" id="colleaguesSection" style="display:none">
+        <label>👥 Students on same shift</label>
+        <div class="colleague-list" id="colleagueList"></div>
+      </div>
+      <label>Comment / Notes</label>
+      <textarea id="commentInput" placeholder="Add a note about this shift..."></textarea>
+      <div class="modal-actions">
+        <button class="btn-primary" onclick="saveModal()">Save</button>
+        <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── ROSTER DATA ──
+    // Names from the roster image. Shifts: M=Morning, E=Evening, N=Night, O=Off
+    // Dates: May 16 – June 5 (21 days based on image columns)
+    const ROSTER = {
+      "Shristi": ['M', 'O', 'E', 'M', 'M', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
+      "Sumandeep": ['M', 'M', 'M', 'M', 'E', 'E', 'M', 'M', 'O', 'E', 'E', 'E', 'M', 'M', 'M', 'O'],
+      "Tanisha Yadav": ['M', 'O', 'E', 'E', 'M', 'M', 'M', 'M', 'E', 'E', 'E', 'M', 'M', 'M', 'O', 'M'],
+      "Umang": ['M', 'M', 'M', 'O', 'M', 'E', 'E', 'M', 'E', 'E', 'M', 'M', 'M', 'O', 'E', 'M'],
+      "Khushi": ['M', 'M', 'O', 'M', 'E', 'E', 'M', 'M', 'M', 'E', 'M', 'O', 'E', 'M', 'M', 'E'],
+      "Gurvinder": ['M', 'M', 'M', 'M', 'O', 'E', 'E', 'E', 'M', 'M', 'E', 'M', 'E', 'E', 'M', 'O'],
+      "Sakina": ['M', 'O', 'E', 'E', 'E', 'E', 'M', 'E', 'E', 'M', 'O', 'E', 'E', 'M', 'M', 'M'],
+      "Chetana": ['E', 'E', 'M', 'O', 'M', 'E', 'M', 'E', 'M', 'M', 'E', 'M', 'O', 'E', 'E', 'M'],
+      "Samiksha": ['O', 'E', 'E', 'M', 'E', 'M', 'M', 'M', 'O', 'M', 'E', 'E', 'E', 'M', 'M', 'M'],
+      "Sanjana": ['O', 'E', 'E', 'M', 'M', 'M', 'M', 'E', 'M', 'M', 'E', 'E', 'M', 'O', 'E', 'E'],
+      "Salma": ['E', 'E', 'O', 'E', 'M', 'M', 'M', 'E', 'M', 'E', 'E', 'M', 'O', 'E', 'E', 'E'],
+      "Sheetal": ['M', 'E', 'M', 'M', 'O', 'E', 'E', 'M', 'M', 'E', 'M', 'M', 'E', 'E', 'M', 'O'],
+      "Prachi P lal": ['E', 'M', 'M', 'E', 'E', 'M', 'O', 'M', 'M', 'E', 'E', 'E', 'M', 'M', 'O', 'E'],
+      "PRIYANSHU": ['E', 'E', 'O', 'M', 'M', 'E', 'M', 'M', 'E', 'E', 'M', 'O', 'E', 'E', 'M', 'M'],
+      "Radhika": ['M', 'M', 'E', 'M', 'O', 'E', 'E', 'M', 'M', 'M', 'E', 'M', 'M', 'O', 'E', 'E'],
+      "Rozy": ['E', 'O', 'E', 'E', 'M', 'M', 'M', 'E', 'O', 'E', 'E', 'E', 'M', 'M', 'E', 'M'],
+      "Mamta": ['E', 'O', 'E', 'M', 'M', 'M', 'E', 'M', 'M', 'E', 'E', 'M', 'E', 'M', 'O', 'E'],
+      "Navpreet": ['E', 'E', 'M', 'E', 'M', 'E', 'M', 'M', 'E', 'M', 'M', 'M', 'M', 'O', 'E', 'M'],
+      "Niharika": ['M', 'M', 'M', 'E', 'M', 'M', 'E', 'E', 'M', 'M', 'E', 'E', 'M', 'M', 'M', 'O'],
+      "Payal": ['O', 'E', 'M', 'E', 'E', 'O', 'M', 'E', 'M', 'E', 'E', 'M', 'E', 'E', 'M', 'E']
+    };
+
+    const START_DATE = new Date(2026, 4, 16); // May 16, 2026
+    const DAYS = 16;
+
+    function getDateLabel(idx) {
+      const d = new Date(START_DATE);
+      d.setDate(d.getDate() + idx);
+      return d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
+    }
+    function getDateKey(idx) {
+      const d = new Date(START_DATE);
+      d.setDate(d.getDate() + idx);
+      return d.toISOString().slice(0, 10);
+    }
+
+    // ── STORAGE ──
+    function storageKey(name) { return 'duty_' + name.toLowerCase().replace(/\s+/g, '_'); }
+    function loadData(name) {
+      try { return JSON.parse(localStorage.getItem(storageKey(name))) || {}; } catch { return {}; }
+    }
+    function saveData(name, data) {
+      localStorage.setItem(storageKey(name), JSON.stringify(data));
+    }
+
+    // ── STATE ──
+    let currentUser = null;
+    let userData = {};
+    let modalDayIdx = null;
+    let tempDone = false;
+
+    // ── LANDING ──
+    const nameInput = document.getElementById('nameInput');
+    const suggestionsEl = document.getElementById('suggestions');
+    const errorMsg = document.getElementById('errorMsg');
+    const names = Object.keys(ROSTER);
+
+    nameInput.addEventListener('input', function () {
+      const q = this.value.trim().toLowerCase();
+      errorMsg.textContent = '';
+      if (!q) { suggestionsEl.style.display = 'none'; return; }
+      const matches = names.filter(n => n.toLowerCase().includes(q));
+      if (matches.length === 0) { suggestionsEl.style.display = 'none'; return; }
+      suggestionsEl.innerHTML = matches.map(n =>
+        `<div class="suggestion-item" onclick="openDashboard('${n}')">${n}</div>`
+      ).join('');
+      suggestionsEl.style.display = 'block';
+    });
+
+    nameInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') searchName();
+    });
+
+    document.getElementById('searchBtn').addEventListener('click', searchName);
+
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.input-wrap')) suggestionsEl.style.display = 'none';
+    });
+
+    function searchName() {
+      const q = nameInput.value.trim().toLowerCase();
+      const match = names.find(n => n.toLowerCase() === q) || names.find(n => n.toLowerCase().includes(q));
+      if (match) { openDashboard(match); }
+      else { errorMsg.textContent = '❌ Name not found. Check spelling or select from suggestions.'; }
+    }
+
+    function openDashboard(name) {
+      currentUser = name;
+      userData = loadData(name);
+      suggestionsEl.style.display = 'none';
+
+      document.getElementById('landing').style.display = 'none';
+      const dash = document.getElementById('dashboard');
+      dash.style.display = 'flex';
+
+      const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+      document.getElementById('avatarEl').textContent = initials;
+      document.getElementById('userName').textContent = name;
+
+      renderStats();
+      renderGrid();
+    }
+
+    function goBack() {
+      document.getElementById('dashboard').style.display = 'none';
+      document.getElementById('landing').style.display = 'flex';
+      nameInput.value = '';
+      errorMsg.textContent = '';
+      currentUser = null;
+    }
+
+    // ── STATS ──
+    function renderStats() {
+      const shifts = ROSTER[currentUser];
+      const mCount = shifts.filter(s => s === 'M').length;
+      const eCount = shifts.filter(s => s === 'E').length;
+      const nCount = shifts.filter(s => s === 'N').length;
+      const done = Object.values(userData).filter(d => d.done).length;
+      const total = shifts.filter(s => s !== 'O').length;
+
+      document.getElementById('userSub').textContent = `${total} shifts | ${done} completed`;
+      document.getElementById('statsBar').innerHTML = `
+    <div class="stat-card"><div class="label">Completed</div><div class="val" style="color:var(--success)">${done}/${total}</div></div>
+    <div class="stat-card"><div class="label">Morning</div><div class="val" style="color:var(--morning)">${mCount}</div></div>
+    <div class="stat-card"><div class="label">Evening</div><div class="val" style="color:var(--evening)">${eCount}</div></div>
+    <div class="stat-card"><div class="label">Night</div><div class="val" style="color:var(--night)">${nCount}</div></div>
+  `;
+    }
+
+    // ── GRID ──
+    function renderGrid() {
+      const shifts = ROSTER[currentUser];
+      const grid = document.getElementById('rosterGrid');
+      grid.innerHTML = '';
+
+      // Group by week
+      const weeks = [];
+      for (let i = 0; i < DAYS; i += 7) {
+        weeks.push({ start: i, end: Math.min(i + 7, DAYS) });
+      }
+
+      weeks.forEach((week, wi) => {
+        const monthEl = document.createElement('div');
+        monthEl.className = 'month-label';
+        monthEl.textContent = `Week ${wi + 1}`;
+        grid.appendChild(monthEl);
+
+        const row = document.createElement('div');
+        row.className = 'week-row';
+        for (let i = week.start; i < week.end; i++) {
+          const shift = shifts[i];
+          const dateKey = getDateKey(i);
+          const day = userData[dateKey] || {};
+          const isOff = shift === 'O';
+
+          const card = document.createElement('div');
+          card.className = 'day-card' + (day.done ? ' completed' : '') + (isOff ? ' off-day' : '');
+          card.setAttribute('data-idx', i);
+          card.innerHTML = `
+        <div class="check-icon">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="day-num">${getDateLabel(i)}</div>
+        <span class="shift-badge shift-${shift}">${shift === 'O' ? 'OFF' : shift === 'M' ? 'Morning' : shift === 'E' ? 'Evening' : 'Night'}</span>
+        ${day.comment ? `<div class="comment-preview">💬 ${day.comment}</div>` : ''}
+      `;
+          if (!isOff) card.addEventListener('click', () => openModal(i));
+          row.appendChild(card);
+        }
+        // Fill empty slots
+        const count = week.end - week.start;
+        for (let j = count; j < 7; j++) {
+          row.appendChild(document.createElement('div'));
+        }
+        grid.appendChild(row);
+      });
+    }
+
+    // ── MODAL ──
+    function openModal(idx) {
+      modalDayIdx = idx;
+      const shift = ROSTER[currentUser][idx];
+      const dateKey = getDateKey(idx);
+      const day = userData[dateKey] || {};
+      tempDone = !!day.done;
+
+      document.getElementById('modalTitle').textContent = getDateLabel(idx);
+      document.getElementById('modalSub').textContent =
+        `Shift: ${shift === 'M' ? '🌅 Morning' : shift === 'E' ? '🌆 Evening' : '🌙 Night'}`;
+      document.getElementById('commentInput').value = day.comment || '';
+
+      // Find colleagues on the same shift this day
+      const colleagues = Object.entries(ROSTER)
+        .filter(([name, shifts]) => name !== currentUser && shifts[idx] === shift)
+        .map(([name]) => name);
+
+      const sec = document.getElementById('colleaguesSection');
+      const list = document.getElementById('colleagueList');
+      if (colleagues.length > 0) {
+        list.innerHTML = colleagues.map(n => {
+          const initials = n.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+          return `<div class="colleague-pill"><span class="colleague-avatar">${initials}</span><span>${n}</span></div>`;
+        }).join('');
+        sec.style.display = 'block';
+      } else {
+        sec.style.display = 'none';
+      }
+
+      const tog = document.getElementById('toggleComplete');
+      tog.classList.toggle('active', tempDone);
+
+      document.getElementById('modalOverlay').classList.add('open');
+    }
+
+    function toggleDone() {
+      tempDone = !tempDone;
+      document.getElementById('toggleComplete').classList.toggle('active', tempDone);
+    }
+
+    function saveModal() {
+      const dateKey = getDateKey(modalDayIdx);
+      userData[dateKey] = {
+        done: tempDone,
+        comment: document.getElementById('commentInput').value.trim(),
+        updatedAt: new Date().toISOString()
+      };
+      saveData(currentUser, userData);
+      closeModal();
+      renderStats();
+      renderGrid();
+    }
+
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('open');
+      modalDayIdx = null;
+    }
+
+    document.getElementById('modalOverlay').addEventListener('click', function (e) {
+      if (e.target === this) closeModal();
+    });
+  </script>
+</body>
+
+</html>
