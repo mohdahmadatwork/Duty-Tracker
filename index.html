@@ -732,31 +732,26 @@
   <script>
     // ── ROSTER DATA ──
     // Names from the roster image. Shifts: M=Morning, E=Evening, N=Night, O=Off
-    // Dates: June 15 - June 30 (16 days based on image columns)
+    // Dates: August 16 - August 31 (16 days based on image columns)
     const ROSTER = {
-      "Shristi": ['M', 'O', 'E', 'M', 'M', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
-      "Sumandeep": ['M', 'M', 'M', 'M', 'E', 'E', 'M', 'M', 'O', 'E', 'E', 'E', 'M', 'M', 'M', 'O'],
-      "Tanisha Yadav": ['M', 'O', 'E', 'E', 'M', 'M', 'M', 'M', 'E', 'E', 'E', 'M', 'M', 'M', 'O', 'M'],
-      "Umang": ['M', 'O', 'M', 'E', 'M', 'E', 'E', 'M', 'E', 'E', 'O', 'E', 'M', 'M', 'E', 'M'],
-      "Khushi": ['M', 'M', 'O', 'M', 'E', 'E', 'M', 'M', 'M', 'E', 'M', 'O', 'E', 'M', 'M', 'E'],
-      "Gurvinder": ['M', 'M', 'M', 'M', 'O', 'E', 'E', 'E', 'M', 'M', 'E', 'M', 'E', 'E', 'M', 'O'],
-      "Sakina": ['M', 'O', 'E', 'E', 'E', 'E', 'M', 'E', 'E', 'M', 'O', 'E', 'E', 'M', 'M', 'M'],
-      "Chetana": ['E', 'E', 'M', 'O', 'M', 'E', 'M', 'E', 'M', 'M', 'E', 'M', 'O', 'E', 'E', 'M'],
-      "Samiksha": ['O', 'E', 'E', 'M', 'E', 'M', 'M', 'M', 'O', 'M', 'E', 'E', 'E', 'M', 'M', 'M'],
-      "Sanjana": ['O', 'E', 'E', 'M', 'M', 'M', 'M', 'E', 'M', 'M', 'E', 'E', 'M', 'O', 'E', 'E'],
-      "Salma": ['E', 'M', 'M', 'M', 'E', 'E', 'E', 'E', 'M', 'M', 'M', 'M', 'E', 'M', 'O', 'E'],
-      "Sheetal": ['M', 'E', 'M', 'M', 'O', 'E', 'E', 'M', 'M', 'E', 'M', 'M', 'E', 'E', 'M', 'O'],
-      "Prachi P lal": ['E', 'M', 'M', 'E', 'E', 'M', 'O', 'M', 'M', 'E', 'E', 'E', 'M', 'M', 'O', 'E'],
-      "PRIYANSHU": ['E', 'E', 'O', 'M', 'M', 'E', 'M', 'M', 'E', 'E', 'M', 'O', 'E', 'E', 'M', 'M'],
-      "Radhika": ['M', 'M', 'E', 'M', 'O', 'E', 'E', 'M', 'M', 'M', 'E', 'M', 'M', 'O', 'E', 'E'],
-      "Rozy": ['E', 'O', 'E', 'E', 'M', 'M', 'M', 'E', 'O', 'E', 'E', 'E', 'M', 'M', 'E', 'M'],
-      "Mamta": ['E', 'O', 'E', 'M', 'M', 'M', 'E', 'M', 'M', 'E', 'E', 'M', 'E', 'M', 'O', 'E'],
-      "Navpreet": ['E', 'E', 'M', 'E', 'M', 'E', 'M', 'M', 'E', 'M', 'M', 'M', 'M', 'O', 'E', 'M'],
-      "Niharika": ['M', 'M', 'M', 'E', 'M', 'M', 'E', 'E', 'M', 'M', 'E', 'E', 'M', 'M', 'M', 'O'],
-      "Payal": ['O', 'E', 'M', 'E', 'E', 'O', 'M', 'E', 'M', 'E', 'E', 'M', 'E', 'E', 'M', 'E']
+      "Samiksha": ['E', 'E', 'O', 'E', 'M', 'M', 'M', 'E', 'E', 'M', 'M', 'E', 'M', 'M', 'O', 'E'],
+      "Sanjana": ['M', 'M', 'E', 'M', 'M', 'M', 'O', 'E', 'E', 'E', 'M', 'O', 'E', 'M', 'E', 'E'],
+      "Salma": ['E', 'E', 'M', 'O', 'E', 'M', 'M', 'M', 'E', 'E', 'O', 'E', 'M', 'M', 'E', 'M'],
+      "Sheetal": ['M', 'M', 'M', 'M', 'E', 'E', 'E', 'O', 'M', 'M', 'E', 'E', 'M', 'M', 'M', 'O'],
+      "Srishti": ['E', 'M', 'M', 'M', 'O', 'E', 'E', 'E', 'M', 'E', 'E', 'M', 'M', 'O', 'M', 'E'],
+      "Sumandeep": ['E', 'M', 'E', 'M', 'E', 'M', 'O', 'E', 'E', 'E', 'M', 'M', 'O', 'E', 'M', 'E'],
+      "Tanisha": ['E', 'E', 'E', 'E', 'M', 'M', 'M', 'O', 'M', 'E', 'M', 'M', 'E', 'E', 'E', 'O'],
+      "Umang": ['M', 'M', 'M', 'E', 'E', 'E', 'E', 'E', 'O', 'M', 'M', 'E', 'M', 'M', 'O', 'M'],
+      "Prachi": ['E', 'E', 'E', 'M', 'M', 'M', 'M', 'O', 'E', 'E', 'M', 'M', 'E', 'O', 'E', 'M'],
+      "Priyanshu": ['M', 'M', 'M', 'E', 'O', 'E', 'M', 'E', 'M', 'M', 'E', 'M', 'O', 'E', 'E', 'M'],
+      "Radhika": ['M', 'M', 'E', 'E', 'E', 'O', 'E', 'E', 'E', 'E', 'M', 'M', 'M', 'M', 'O', 'E'],
+      "Manisha": ['E', 'E', 'M', 'O', 'M', 'M', 'M', 'E', 'E', 'E', 'M', 'E', 'M', 'M', 'O', 'E'],
+      "Navpreet": ['M', 'E', 'O', 'E', 'M', 'M', 'M', 'E', 'O', 'M', 'E', 'M', 'E', 'M', 'O', 'E'],
+      "Niharika": ['M', 'O', 'E', 'E', 'E', 'M', 'M', 'E', 'O', 'M', 'E', 'E', 'M', 'M', 'M', 'E'],
+      "Payal": ['O', 'M', 'M', 'E', 'E', 'M', 'E', 'M', 'M', 'M', 'E', 'M', 'M', 'O', 'M', 'M']
     };
 
-    const START_DATE = new Date(2026, 5, 15); // June 15, 2026
+    const START_DATE = new Date(2026, 7, 16); // August 16, 2026
     const DAYS = 16;
 
     function getDateLabel(idx) {
